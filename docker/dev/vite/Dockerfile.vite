@@ -1,0 +1,11 @@
+FROM node:20
+# Create app directory
+WORKDIR /app
+
+COPY laravel/package*.json /app/
+
+RUN npm install
+COPY laravel/ /app
+
+ENTRYPOINT [ "npm", "run", "dev" ]
+

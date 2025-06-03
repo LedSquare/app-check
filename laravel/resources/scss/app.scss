@@ -1,0 +1,81 @@
+@import "./base";
+@import "./variables";
+@import "./snippets";
+@import "./aspect/aspect";
+
+#app {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.wrapper {
+    background-color: $blocks-background;
+    max-width: 1200px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+
+    padding-left: 15px;
+    padding-right: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 24px;
+
+    > * {
+        display: flex;
+    }
+}
+
+.start-page {
+    display: flex;
+    height: 500px;
+    flex-direction: column;
+
+    > h1 {
+        margin-bottom: 2rem;
+    }
+}
+
+.img-container {
+    width: 250px;
+    height: 250px;
+
+    .image {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+    }
+}
+
+.start-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid $blue;
+    color: black;
+    border-radius: 10px;
+    transition:
+        background-color 0.3s,
+        color 0.3s,
+        border 0.3s;
+
+    &:hover {
+        background-color: $blue;
+        border: 2px solid whitesmoke;
+        color: #fff;
+    }
+}
+
+.active {
+    text-decoration: underline;
+}

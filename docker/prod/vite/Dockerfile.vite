@@ -1,0 +1,16 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY laravel/package*.json /app/
+
+RUN npm install
+
+COPY laravel/ /app
+
+RUN npm run build
+
+# RUN npm install -g serve
+
+# ENTRYPOINT [ "serve", "-s", "public/build" ]
+ENTRYPOINT [ "npm", "run", "serve"]
