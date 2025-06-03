@@ -20,15 +20,6 @@ use Illuminate\Support\Facades\Route;
  */
 Auth::routes();
 
-Route::controller(HomeController::class)->name('home')->group(function () {
-    Route::get('/', 'index');
-});
 
-Route::controller(ProfileUserController::class)
-    ->name('profile')
-    ->prefix('profile')
-    ->middleware('auth')
-    ->group(function () {
-        Route::get('', 'index')->name('.user');
-        Route::post('', 'update')->name('.update');
-    });
+Route::get('/time-report', [TimeReportController::class, 'showForm'])->name('time.report.form');
+Route::post('/time-report', [TimeReportController::class, 'processForm'])->name('time.report.process');
