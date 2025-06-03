@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Profile\ProfileUserController;
+use App\Http\Controllers\TimeReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 

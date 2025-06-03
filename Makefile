@@ -45,7 +45,7 @@ delete-name: docker-clear-images-name
 
 
 # shortcuts
-start: docker-up composer-install key-storage npm-install
+start: docker-up composer-install key-storage
 stop: docker-down
 restart: stop start
 rebuild: stop build start 
@@ -76,8 +76,6 @@ chmod:
 	docker exec -it php chmod -R 777 
 exec-app:
 	${DOCKER_EXEC_APP} bash
-npm-install:
-	docker exec -it ${PROJECT}_vite npm install 
 
 migrate:
 	${DOCKER_EXEC_APP} php artisan migrate:fresh $(s)

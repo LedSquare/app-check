@@ -11,9 +11,4 @@ use Inertia\Response;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-
-    public function sendError($error, $status = null): Response
-    {
-        return Inertia::render('');
-    }
 }
