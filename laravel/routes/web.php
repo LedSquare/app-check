@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TimeReportController;
+use App\Http\Controllers\TimeTrackController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +21,6 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 
-Route::get('/time-report', [TimeReportController::class, 'showForm'])->name('time.report.form');
-Route::post('/time-report', [TimeReportController::class, 'processForm'])->name('time.report.process');
+
+Route::get('/time-parse', [TimeTrackController::class, 'showForm'])->name('time.parse.form');
+Route::post('/time-parse', [TimeTrackController::class, 'parseTime'])->name('time.parse');
