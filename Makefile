@@ -4,8 +4,8 @@ ifneq (,$(wildcard ./.env))
 endif
 
 setup: 
-	cp .env.example .env; 
-	cp laravel/.env.example laravel/.env;
+	cp .env.dev .env; 
+	cp src/.env.dev src/.env;
 	docker network create aspnet
 
 # start deploying
@@ -45,8 +45,8 @@ delete-name: docker-clear-images-name
 
 
 # shortcuts
-start: docker-up composer-install key-storage
-stop: docker-down
+up: docker-up composer-install key-storage
+down: docker-down
 restart: stop start
 rebuild: stop build start 
 build: docker-build
@@ -74,7 +74,7 @@ key-storage:
 	${DOCKER_EXEC_APP} chmod -R 777 storage
 chmod:
 	docker exec -it php chmod -R 777 
-exec-app:
+bash:
 	${DOCKER_EXEC_APP} bash
 
 migrate:
@@ -92,3 +92,7 @@ tinker:
 
 migrate-fresh:
 	docker exec -it ${PROJECT}_php php artisan migrate:fresh --seed
+
+nginx.rebuild:
+	docker compose build --no-cache nginx;
+	docker compose up -d --force-recreate nginx;

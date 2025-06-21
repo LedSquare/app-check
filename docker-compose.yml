@@ -8,11 +8,11 @@ services:
     depends_on:
       - db
     volumes:
-      - ./laravel:/site
+      - ./src:/site
     networks:
       - appnet
 
-  server:
+  nginx:
     container_name: ${PROJECT}_nginx
     image: ${PROJECT}_nginx:${TAG}
     build:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - php
     volumes:
-      - './laravel:/site'
+      - './src:/site'
     networks:
       - appnet
 
