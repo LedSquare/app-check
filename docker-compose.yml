@@ -42,6 +42,14 @@ services:
     networks:
       - appnet
 
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: ${PROJECT}_redis
+    networks:
+      - appnet
+
+
   adminer:
     image: adminer
     restart: unless-stopped

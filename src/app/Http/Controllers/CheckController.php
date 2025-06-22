@@ -9,14 +9,12 @@ use Illuminate\Foundation\Testing\TestCase;
 final class CheckController extends TestCase
 {
     public function __construct(
-        private UrlConfig $config,
     ) {
     }
 
     public function home(): View
     {
-        $message = $this->config->baseUri;
-
+        $message = 'asdasd';
         return view('pages.home', compact('message'));
     }
 }
