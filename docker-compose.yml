@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: docker/dev/nginx/Dockerfile
     ports:
-      - 94:80
+      - 95:80
     depends_on:
       - php
     volumes:
@@ -38,7 +38,7 @@ services:
     container_name: ${PROJECT}_db
     hostname: db
     ports:
-    - 3333:5432
+    - 3334:5432
     networks:
       - appnet
 
@@ -54,7 +54,7 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - "8888:8080"
+      - "8887:8080"
     container_name: ${PROJECT}_adminer
     hostname: adminer
     networks:

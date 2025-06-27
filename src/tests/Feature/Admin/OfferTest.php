@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Token;
-
 
 beforeEach(function () {
     $this->setTestUri('https://admin');
@@ -24,9 +22,8 @@ test('Создание оффера', function () {
     expect($res->status())->toBe(201);
 
     $this->offerId = $res->json('id');
-
     Cache::put('offer_id', $this->offerId, now()->addMinutes(10));
-})->skip();
+});
 
 
 test('Получить список офферов', function () {
@@ -40,5 +37,48 @@ test('Получить список офферов', function () {
     expect($res->status())->toBe(200);
 });
 
+test('Поиск оффера', function () {
+    $res = Http::withHeaders($this->header)
+        ->get($this->testUrl.'v2/cabinet/management/offers/search', [
+            'search' => 'test',
+            'limit' => 10,
+            'offset' => 0,
+        ]);
 
+    expect($res->status())->toBe(200);
+});
+
+test('Получить оффер по id', function () {
+    $res = Http::withHeaders($this->header)
+        ->get($this->testUrl.'v2/cabinet/management/offers/'.Cache::get('offer_id'));
+
+    expect($res->status())->toBe(200);
+});
+
+test('404. Получить оффер по id', function () {
+    $res = Http::withHeaders($this->header)
+        ->get($this->testUrl.'v2/cabinet/management/offers/'.fake()->uuid());
+
+    expect($res->status())->toBe(404);
+});
+
+test('Обновить оффер', function () {
+    $res = Http::withHeaders($this->header)
+        ->patch($this->testUrl.'v2/cabinet/management/offers/'.Cache::get('offer_id'), [
+            'system_prompt' => fake()->text(150),
+            'name' => $name = fake()->name(),
+            'slug' => \Str::slug($name),
+            'max_users' => 84,
+            'expired_at' => now()->addYear(),
+        ]);
+
+    expect($res->status())->toBe(200);
+});
+
+test('Статистика оффера', function () {
+    $res = Http::withHeaders($this->header)
+        ->get($this->testUrl.'v2/cabinet/management/offers/'.Cache::get('offer_id').'/stats');
+
+    expect($res->status())->toBe(200);
+});
 
