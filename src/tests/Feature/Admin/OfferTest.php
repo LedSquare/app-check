@@ -60,6 +60,7 @@ test('404. Получить оффер по id', function () {
     $res = Http::withHeaders($this->header)
         ->get($this->testUrl.'v2/cabinet/management/offers/'.fake()->uuid());
 
+
     expect($res->status())->toBe(404);
 });
 

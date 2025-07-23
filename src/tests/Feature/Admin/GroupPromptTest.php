@@ -67,5 +67,5 @@ test('Удалить публичную группу по id', function () {
     $res = Http::withHeaders($this->authHeader)
         ->delete($this->testUrl."v2/cabinet/prompts/groups/$groupId");
 
-    expect($res->status())->toBe(200);
+    expect($res->status())->toBe(204);
 });
