@@ -24,7 +24,9 @@ beforeEach(function () {
 });
 
 test('Получить данные лицевого счета по id владельца', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    /** @var Config $this */
+
+    $res = $this->alpinaHttp()
         ->get("v2/cabinet/billing/balance/{$this->offerId}");
 
     expect($res->status())->toBe(200);

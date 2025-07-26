@@ -9,9 +9,14 @@ beforeEach(function () {
     $this->alpinaAiConfig = $alpina;
 
     $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
+    $this->alpinaHttp()->withHeaders($this->authHeader);
+
+    if (Cache::get('user_offer_id')) {
+        return;
+    }
 
     $name = fake('ru')->company();
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post('v2/cabinet/management/offers/create', [
             'name' => $name,
             'slug' => \Str::slug($name),
@@ -20,19 +25,20 @@ beforeEach(function () {
             'expired_at' => now()->addDays(3),
         ]);
 
-    $this->offerId = $res->json('id');
+    Cache::put('user_offer_id', $res->json('id'), now()->addMinutes(10));
 });
 
 
 test('Создание пользователя', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $offerId = Cache::get('user_offer_id');
+    $res = $this->alpinaHttp()
         ->post('v2/cabinet/users', [
             'firstName' => fake()->firstName(),
             'lastName' => fake()->lastName(),
             'role' => 'MEMBER',
             'email' => fake()->email(),
             'password' => 'password',
-            'entityId' => $this->offerId,
+            'entityId' => $offerId,
             'send_email' => false,
         ]);
 
@@ -43,7 +49,7 @@ test('Создание пользователя', function () {
 
 
 test('Получить список пользователей', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/users', [
             'per_page' => 20,
             'page' => 1,
@@ -56,7 +62,7 @@ test('Получить список пользователей', function () {
 test('Получить пользователя по id', function () {
     $userId = Cache::get('user_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/users/'.$userId);
 
     expect($res->status())->toBe(200);
@@ -65,7 +71,7 @@ test('Получить пользователя по id', function () {
 test('Обновить данные пользователя', function () {
     $userId = Cache::get('user_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->patch('v2/cabinet/users/'.$userId, [
             'lastName' => 'LastName_updated',
         ]);
@@ -76,7 +82,7 @@ test('Обновить данные пользователя', function () {
 test('Сменить статус блокировки пользователя - blocked', function () {
     $userId = Cache::get('user_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->patch("v2/cabinet/users/$userId/status", [
             'status' => 'blocked',
         ]);
@@ -87,7 +93,7 @@ test('Сменить статус блокировки пользователя 
 test('Сменить статус блокировки пользователя - active', function () {
     $userId = Cache::get('user_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->patch("v2/cabinet/users/$userId/status", [
             'status' => 'active',
         ]);
@@ -98,7 +104,7 @@ test('Сменить статус блокировки пользователя 
 test('Перенос пользователя в оффер', function () {
     $userId = Cache::get('user_id');
 
-    $transOfferId = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $transOfferId = $this->alpinaHttp()
         ->post('v2/cabinet/management/offers/create', [
             'name' => 'test-transfer-offer',
             'slug' => fake()->slug(),
@@ -107,7 +113,7 @@ test('Перенос пользователя в оффер', function () {
             'expired_at' => now()->addDays(3),
         ])->json('id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post("v2/cabinet/users/transfer-to-offer", [
             'user_id' => $userId,
             'offer_id' => $transOfferId,
@@ -117,14 +123,14 @@ test('Перенос пользователя в оффер', function () {
 });
 
 test('Массовая регистрация', function () {
-
+    $offerId = Cache::get('user_offer_id');
     $email = fake()->email();
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post("v2/cabinet/users/mass-registration", [
             'emails' => [
                 $email
             ],
-            'offer_id' => $this->offerId,
+            'offer_id' => $offerId,
         ]);
 
     expect($res->status())->toBe(200);
@@ -142,7 +148,7 @@ test('Массовая регистрация', function () {
 test('Сбросить пароль​', function () {
     $userId = Cache::get('user_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post('v2/cabinet/users/password/reset', [
             'user_id' => $userId,
         ]);

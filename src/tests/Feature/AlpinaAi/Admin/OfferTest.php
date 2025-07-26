@@ -3,27 +3,27 @@
 use Tests\Config;
 use Tests\Configs\AlpinaAiConfig;
 
-
 beforeEach(function () {
     /** @var Config $this */
     $alpina = new AlpinaAiConfig('https://admin');
     $this->alpinaAiConfig = $alpina;
 
     $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
-    $this->offerId = Cache::get('offer_id');
+    $this->alpinaHttp()->withHeaders($this->authHeader);
 });
 
 
 test('Создание оффера', function () {
 
     $company = fake()->company();
-    $res = $this->alpinaHttp()->withHeaders($this->header)->post('v2/cabinet/management/offers/create', [
-        'name' => $company,
-        'slug' => \Str::slug($company),
-        'system_prompt' => 'Какой то там тестовый промпт',
-        'max_users' => fake()->numberBetween(10, 100),
-        'expired_at' => now()->addYear()->format('Y-m-d'),
-    ]);
+    $res = $this->alpinaHttp()
+        ->post('v2/cabinet/management/offers/create', [
+            'name' => $company,
+            'slug' => \Str::slug($company),
+            'system_prompt' => 'Какой то там тестовый промпт',
+            'max_users' => fake()->numberBetween(10, 100),
+            'expired_at' => now()->addYear()->format('Y-m-d'),
+        ]);
 
     expect($res->status())->toBe(201);
 
@@ -34,7 +34,7 @@ test('Создание оффера', function () {
 
 test('Получить список офферов', function () {
 
-    $res = $this->alpinaHttp()->withHeaders($this->header)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/management/offers', [
             'per_page' => 15,
             'page' => 1,
@@ -44,7 +44,7 @@ test('Получить список офферов', function () {
 });
 
 test('Поиск оффера', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->header)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/management/offers/search', [
             'search' => 'test',
             'limit' => 10,
@@ -55,14 +55,15 @@ test('Поиск оффера', function () {
 });
 
 test('Получить оффер по id', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->header)
-        ->get('v2/cabinet/management/offers/'.$this->offerId);
+    $offerId = Cache::get('offer_id');
+    $res = $this->alpinaHttp()
+        ->get('v2/cabinet/management/offers/'.$offerId);
 
     expect($res->status())->toBe(200);
 });
 
 test('404. Получить оффер по id', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->header)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/management/offers/'.fake()->uuid());
 
 
@@ -70,8 +71,9 @@ test('404. Получить оффер по id', function () {
 });
 
 test('Обновить оффер', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->header)
-        ->patch('v2/cabinet/management/offers/'.$this->offerId, [
+    $offerId = Cache::get('offer_id');
+    $res = $this->alpinaHttp()
+        ->patch('v2/cabinet/management/offers/'.$offerId, [
             'system_prompt' => fake()->text(150),
             'name' => $name = fake()->name(),
             'slug' => \Str::slug($name),
@@ -83,8 +85,9 @@ test('Обновить оффер', function () {
 });
 
 test('Статистика оффера', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->header)
-        ->get('v2/cabinet/management/offers/'.$this->offerId.'/stats');
+    $offerId = Cache::get('offer_id');
+    $res = $this->alpinaHttp()
+        ->get('v2/cabinet/management/offers/'.$offerId.'/stats');
 
     expect($res->status())->toBe(200);
 });
@@ -135,7 +138,7 @@ test('Скачать файл статистики пользователей о
 
 test('Создать оффер', function () {
     $name = fake('ru')->company();
-    $res = $this->alpinaHttp()->withHeaders($this->header)
+    $res = $this->alpinaHttp()
         ->post('v2/cabinet/management/offers/create', [
             'name' => $name,
             'slug' => \Str::slug($name),

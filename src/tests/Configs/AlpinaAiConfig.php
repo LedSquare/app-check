@@ -5,6 +5,7 @@ namespace Tests\Configs;
 use App\Models\AlpinaAi\Admin;
 use App\Models\AlpinaAi\Client;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\Traits\AlpinaAi\ClientAuthorization;
 
@@ -34,11 +35,17 @@ final class AlpinaAiConfig
 
     public function adminAuth(): string
     {
-        $res = Http::post('https://admin.'.$this->subDomain.'v2/auth/login', [
+        if ($token = Cache::get('alpina_ai_admin_auth_token')) {
+            return $token;
+        }
+
+        $res = Http::post('https://admin.'.env('ALPINA_AI_TOP_DOMAIN').'/'.'v2/auth/login', [
             'email' => $this->admin->email,
             'password' => $this->admin->password,
         ]);
+        $token = 'Bearer '.$res->json('access_token');
+        Cache::put('alpina_ai_admin_auth_token', $token, now()->addMinutes(10));
 
-        return 'Bearer '.$res->json('access_token');
+        return $token;
     }
 }

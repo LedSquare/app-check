@@ -9,10 +9,11 @@ beforeEach(function () {
     $this->alpinaAiConfig = $alpina;
 
     $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
+    $this->alpinaHttp()->withHeaders($this->authHeader);
 });
 
 test('Создание "общей" группы промпта​', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post('v2/cabinet/prompts/groups', [
             'name' => 'Автотест. Общая группа#'.fake()->numberBetween(1, 100000),
         ]);
@@ -25,7 +26,7 @@ test('Создание "общей" группы промпта​', function ()
 test('Обновить данные публичной группы по id', function () {
     $groupId = Cache::get('group_id');
 
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->patch("v2/cabinet/prompts/groups/$groupId", [
             'name' => 'Автотест. Общая группа, которую редактировали#'.fake()->numberBetween(1, 100000),
         ]);
@@ -34,7 +35,7 @@ test('Обновить данные публичной группы по id', fu
 });
 
 test('Поиск групп по наименованию', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/prompts/groups/search', [
             'limit' => 10,
             'offset' => 0,
@@ -44,7 +45,7 @@ test('Поиск групп по наименованию', function () {
 });
 
 test('Получить список публичных групп с промптами', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->get('v2/cabinet/prompts/groups', [
             'per_page' => 10,
             'page' => 1,
@@ -55,7 +56,7 @@ test('Получить список публичных групп с промп�
 
 test('Получить публичную группу по id', function () {
     $groupId = Cache::get('group_id');
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->get("v2/cabinet/prompts/groups/$groupId");
 
     expect($res->status())->toBe(200);
@@ -63,7 +64,7 @@ test('Получить публичную группу по id', function () {
 
 test('Удалить публичную группу по id', function () {
     $groupId = Cache::get('group_id');
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->delete("v2/cabinet/prompts/groups/$groupId");
 
     expect($res->status())->toBe(204);

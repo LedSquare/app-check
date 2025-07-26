@@ -3,6 +3,7 @@
 namespace Tests\Traits\AlpinaAi;
 
 use App\Models\AlpinaAi\Client;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 trait ClientAuthorization
@@ -18,10 +19,16 @@ trait ClientAuthorization
             $client = $this->createUser();
         }
 
+        if ($token = Cache::get('alpina_ai_client_auth_token')) {
+            $client->update(['token' => $token]);
+            return $client;
+        }
         $token = $this->http->post('v1/auth/login', [
             'email' => $client->email,
             'password' => $client->password,
         ])->json('tokens')['access_token'];
+
+        Cache::put('alpina_ai_client_auth_token', $token, now()->addMinutes(10));
 
         $client->update(['token' => $token]);
 

@@ -24,7 +24,7 @@ beforeEach(function () {
 });
 
 test('Пополнить баланс', function () {
-    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+    $res = $this->alpinaHttp()
         ->post("v2/cabinet/billing/balance/{$this->offerId}/increase", [
             'value' => 15000,
             'discount' => 10,
