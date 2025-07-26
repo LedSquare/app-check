@@ -3,35 +3,36 @@
 namespace Tests\Traits\AlpinaAi;
 
 use App\Models\AlpinaAi\Client;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 trait ClientAuthorization
 {
     private string $adminUrl;
-    public function clientAuth(string $baseUrl): string
+    public function clientAuth(): Client
     {
+        /** @var \Tests\Configs\AlpinaAiConfig $this */
+
         $this->adminUrl = 'https://admin.'.env('ALPINA_AI_TOP_DOMAIN');
 
         if (! $client = Client::firstWhere('email', env('ALPINA_AI_CLIENT_TEST_EMAIL'))) {
-            $client = $this->createUser($baseUrl);
+            $client = $this->createUser();
         }
 
-        $token = Http::post($baseUrl.'v1/auth/login', [
+        $token = $this->http->post('v1/auth/login', [
             'email' => $client->email,
-            'password' => 'password',
+            'password' => $client->password,
         ])->json('tokens')['access_token'];
 
         $client->update(['token' => $token]);
 
-        return $token;
+        return $client;
     }
 
-    private function createUser(string $baseUrl): string
+    private function createUser(): Client
     {
         $res = Http::post($this->adminUrl.'/v2/auth/login', [
-            'email' => 'admin@admin.com',
-            'password' => '123123',
+            'email' => $this->admin->email,
+            'password' => $this->admin->password,
         ]);
 
         $token = $res->json('access_token');
@@ -68,6 +69,7 @@ trait ClientAuthorization
             'password' => 'password',
         ];
 
-        return Client::updateOrCreate($client);
+        $this->client = Client::updateOrCreate($client);
+        return $this->client;
     }
 }

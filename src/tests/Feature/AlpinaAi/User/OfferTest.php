@@ -3,9 +3,6 @@
 use App\Models\AlpinaAi\Client;
 use Tests\Config;
 use Tests\Configs\AlpinaAiConfig;
-use Tests\Traits\AlpinaAi\ClientAuthorization;
-
-uses(ClientAuthorization::class);
 
 beforeEach(function () {
     /** @var Config $this */
@@ -13,16 +10,16 @@ beforeEach(function () {
     $this->alpinaAiConfig = $alpina;
 
     $this->alpinaAiConfig->client = $this->alpinaAiConfig->clientAuth();
-
     $this->authHeader = ['Authorization' => $this->alpinaAiConfig->client->token];
 });
 
-test('Отправить код​', function () {
-    /** @var Config|ClientAuthorization $this */
+test('Скачать файл затрат пользователей оффера', function () {
+    /** @var Config $this */
 
     $res = $this->alpinaHttp()->withHeaders($this->authHeader)
-        ->post('v2/user/security/lostpass', [
-            'email' => $this->client->email,
+        ->get('v2/user/security/lostpass', [
+            'start' => '2025-01-01',
+            'end' => '2025-01-05',
         ]);
 
     expect($res->status())->toBe(200);
