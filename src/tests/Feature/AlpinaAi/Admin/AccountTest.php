@@ -1,24 +1,18 @@
 <?php
 
-use Tests\AlpinaAi\AdminAuthentication;
 use Tests\Config;
+use Tests\Configs\AlpinaAiConfig;
 
 beforeEach(function () {
-    /** @var Config|AdminAuthentication $this */
-    $this->setTestUri('https://admin');
+    /** @var Config $this */
+    $alpina = new AlpinaAiConfig('https://admin');
+    $this->alpinaAiConfig = $alpina;
 
-    $this->adminAuth($this->testUrl);
-    // $res = Http::post($this->testUrl.'v2/auth/login', [
-    //     'email' => 'admin@admin.com',
-    //     'password' => '123123',
-    // ]);
-
-    // Cache::put('auth_token', 'Bearer '.$res->json('access_token'), now()->addMinutes(10));
-    // $this->authHeader = ['Authorization' => Cache::get('auth_token')];
+    $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
 
     $name = fake('ru')->company();
-    $res = Http::withHeaders($this->authHeader)
-        ->post($this->testUrl.'v2/cabinet/management/offers/create', [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->post('v2/cabinet/management/offers/create', [
             'name' => $name,
             'slug' => \Str::slug($name),
             'system_prompt' => 'Нужно захватить мир',
@@ -30,8 +24,8 @@ beforeEach(function () {
 });
 
 test('Получить данные лицевого счета по id владельца', function () {
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl."v2/cabinet/billing/balance/{$this->offerId}");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get("v2/cabinet/billing/balance/{$this->offerId}");
 
     expect($res->status())->toBe(200);
 });

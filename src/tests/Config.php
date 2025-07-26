@@ -3,21 +3,17 @@
 namespace Tests;
 
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
+use Tests\Configs\AlpinaAiConfig;
+
 
 class Config extends TestCase
 {
-    public string $testUrl;
-    // public PendingRequest|Http $http;
+    public array $authHeader;
 
-    public function setTestUri(string $subDomain): void
+    public AlpinaAiConfig $alpinaAiConfig;
+
+    public function alpinaHttp(): PendingRequest
     {
-        $this->testUrl = $subDomain.'.'.env('TEST_TOP_DOMAIN').'/';
+        return $this->alpinaAiConfig->http;
     }
-
-    // public function setHttp(PendingRequest $http): PendingRequest
-    // {
-
-    //     return $this->http = $http;
-    // }
 }

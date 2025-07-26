@@ -1,21 +1,17 @@
 <?php
 
 use Tests\Config;
+use Tests\Configs\AlpinaAiConfig;
 
 beforeEach(function () {
     /** @var Config $this */
-    $this->setTestUri('https://admin');
+    $alpina = new AlpinaAiConfig('https://admin');
+    $this->alpinaAiConfig = $alpina;
 
-    $res = Http::post($this->testUrl.'v2/auth/login', [
-        'email' => 'admin@admin.com',
-        'password' => '123123',
-    ]);
+    $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
 
-    Cache::put('auth_token', 'Bearer '.$res->json('access_token'), now()->addMinutes(10));
-    $this->authHeader = ['Authorization' => Cache::get('auth_token')];
-
-    $res = Http::withHeaders($this->authHeader)
-        ->post($this->testUrl.'v2/cabinet/prompts/groups', [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->post('v2/cabinet/prompts/groups', [
             'name' => 'Автотест. Общая группа#'.fake()->numberBetween(1, 100000),
         ]);
 
@@ -24,8 +20,8 @@ beforeEach(function () {
 
 test('Получить список публичных промптов', function () {
 
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl."v2/cabinet/prompts?per_page=10&page=1");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get("v2/cabinet/prompts?per_page=10&page=1");
 
     expect($res->status())->toBe(200);
 });
@@ -33,8 +29,8 @@ test('Получить список публичных промптов', functi
 test('Создание публичного промпта', function () {
     $groupId = Cache::get('group_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->post($this->testUrl."v2/cabinet/prompts", [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->post("v2/cabinet/prompts", [
             'name' => 'Автотест. промпт#'.fake()->numberBetween(1, 100000),
             'group_id' => $groupId,
             'content' => fake()->text(200),
@@ -48,8 +44,8 @@ test('Создание публичного промпта', function () {
 test('Получить публичный промпт по id', function () {
     $promptId = Cache::get('prompt_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl."v2/cabinet/prompts/$promptId");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get("v2/cabinet/prompts/$promptId");
 
     expect($res->status())->toBe(200);
 });
@@ -58,8 +54,8 @@ test('Обновить данные публичного промпта по id'
     $groupId = Cache::get('group_id');
     $promptId = Cache::get('prompt_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->patch($this->testUrl."v2/cabinet/prompts/$promptId", [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->patch("v2/cabinet/prompts/$promptId", [
             'name' => 'Автотест. Измененный промпт#'.fake()->numberBetween(1, 100000),
             'group_id' => $groupId,
             'content' => fake()->text(200),
@@ -73,8 +69,8 @@ test('Удалить публичный промпт по id', function () {
     $groupId = Cache::get('group_id');
     $promptId = Cache::get('prompt_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->patch($this->testUrl."v2/cabinet/prompts/$promptId");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->patch("v2/cabinet/prompts/$promptId");
 
     expect($res->status())->toBe(200);
 });

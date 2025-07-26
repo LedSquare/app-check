@@ -1,24 +1,20 @@
 <?php
 
 use Tests\Config;
+use Tests\Configs\AlpinaAiConfig;
 
 beforeEach(function () {
     /** @var Config $this */
-    $this->setTestUri('https://admin');
+    $alpina = new AlpinaAiConfig('https://admin');
+    $this->alpinaAiConfig = $alpina;
 
-    $res = Http::post($this->testUrl.'v2/auth/login', [
-        'email' => 'admin@admin.com',
-        'password' => '123123',
-    ]);
-
-    Cache::put('auth_token', 'Bearer '.$res->json('access_token'), now()->addMinutes(10));
-    $this->authHeader = ['Authorization' => Cache::get('auth_token')];
+    $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
 });
 
 test('Получить список платежей', function () {
 
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl."v2/cabinet/billing/payments?per_page=19&page=1");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get("v2/cabinet/billing/payments?per_page=19&page=1");
 
     expect($res->status())->toBe(200);
 });

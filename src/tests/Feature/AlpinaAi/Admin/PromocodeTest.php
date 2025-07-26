@@ -1,19 +1,18 @@
 <?php
 
+use Tests\Config;
+use Tests\Configs\AlpinaAiConfig;
+
 beforeEach(function () {
-    $this->setTestUri('https://admin');
+    /** @var Config $this */
+    $alpina = new AlpinaAiConfig('https://admin');
+    $this->alpinaAiConfig = $alpina;
 
-    $res = Http::post($this->testUrl.'v2/auth/login', [
-        'email' => 'admin@admin.com',
-        'password' => '123123',
-    ]);
-
-    Cache::put('auth_token', 'Bearer '.$res->json('access_token'), now()->addMinutes(10));
-    $this->authHeader = ['Authorization' => Cache::get('auth_token')];
+    $this->authHeader = ['Authorization' => $this->alpinaAiConfig->adminAuth()];
 
     $name = fake('ru')->company();
-    $res = Http::withHeaders($this->authHeader)
-        ->post($this->testUrl.'v2/cabinet/management/offers/create', [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->post('v2/cabinet/management/offers/create', [
             'name' => $name,
             'slug' => \Str::slug($name),
             'system_prompt' => 'Нужно захватить мир',
@@ -25,8 +24,8 @@ beforeEach(function () {
 });
 
 test('Создать промокод', function () {
-    $res = Http::withHeaders($this->authHeader)
-        ->post($this->testUrl.'v2/cabinet/users/promocodes', [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->post('v2/cabinet/users/promocodes', [
             'offer_id' => $this->offerId,
             'code' => 'AUTO_PROMOCODE#'.fake()->numberBetween(1, 10000),
             'is_active' => true,
@@ -46,8 +45,8 @@ test('Создать промокод', function () {
 test('Обновить промокод​', function () {
     $promocodeId = Cache::get('promocode_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->patch($this->testUrl."v2/cabinet/users/promocodes/$promocodeId", [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->patch("v2/cabinet/users/promocodes/$promocodeId", [
             'is_active' => true,
             'promo_text' => 'Опа автотестовый промокод, который обновили',
             'start_at' => now()->format('Y-m-d'),
@@ -61,8 +60,8 @@ test('Обновить промокод​', function () {
 });
 
 test('Загрузить список промокодов​', function () {
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl.'v2/cabinet/users/promocodes/all', [
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get('v2/cabinet/users/promocodes/all', [
             'offer_id' => $this->offerId
         ]);
 
@@ -72,8 +71,8 @@ test('Загрузить список промокодов​', function () {
 test('Получить детальную информацию по промокоду', function () {
     $promocodeId = Cache::get('promocode_id');
 
-    $res = Http::withHeaders($this->authHeader)
-        ->get($this->testUrl."v2/cabinet/users/promocodes/$promocodeId/detail");
+    $res = $this->alpinaHttp()->withHeaders($this->authHeader)
+        ->get("v2/cabinet/users/promocodes/$promocodeId/detail");
 
     expect($res->status())->toBe(200);
 });

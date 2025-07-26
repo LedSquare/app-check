@@ -1,6 +1,7 @@
 <?php
 
 use Tests\Config;
+use Tests\Configs\AlpinaAiConfig;
 use Tests\Traits\AlpinaAi\AdminAuthentication;
 
 
@@ -17,8 +18,8 @@ use Tests\Traits\AlpinaAi\AdminAuthentication;
 
 
 pest()->extend(Config::class)
-    ->use(AdminAuthentication::class)
     ->in('Feature');
+
 
 /*
 |--------------------------------------------------------------------------
