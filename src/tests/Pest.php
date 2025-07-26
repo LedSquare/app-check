@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Config;
-use Tests\TestCase;
+use Tests\Traits\AlpinaAi\AdminAuthentication;
 
 
 /*
@@ -18,6 +17,7 @@ use Tests\TestCase;
 
 
 pest()->extend(Config::class)
+    ->use(AdminAuthentication::class)
     ->in('Feature');
 
 /*
