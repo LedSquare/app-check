@@ -3,9 +3,6 @@
 use App\Models\AlpinaAi\Client;
 use Tests\Config;
 use Tests\Configs\AlpinaAiConfig;
-use Tests\Traits\AlpinaAi\ClientAuthorization;
-
-uses(ClientAuthorization::class);
 
 beforeEach(function () {
     /** @var Config $this */
@@ -14,17 +11,14 @@ beforeEach(function () {
 
     $this->alpinaAiConfig->client = $this->alpinaAiConfig->clientAuth();
 
-    $this->authHeader = ['Authorization' => $this->alpinaAiConfig->client->token];
+    $this->authHeader = ['authorization' => $this->alpinaAiConfig->client->token];
     $this->alpinaHttp()->withHeaders($this->authHeader);
 });
 
-test('Отправить код​', function () {
+test('Создать личную группу', function () {
     /** @var Config $this */
-
     $res = $this->alpinaHttp()
-        ->post('v2/user/security/lostpass', [
-            'email' => $this->alpinaAiConfig->client->email,
+        ->post('v2/chat/prompts/groups', [
+            'name' => 'auto-test-client-group#'.fake()->numberBetween(1, 10000),
         ]);
-
-    expect($res->status())->toBe(200);
 });

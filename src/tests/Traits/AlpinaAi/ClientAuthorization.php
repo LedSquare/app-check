@@ -28,6 +28,8 @@ trait ClientAuthorization
             'password' => $client->password,
         ])->json('tokens')['access_token'];
 
+        $token = 'Bearer '.$token;
+
         Cache::put('alpina_ai_client_auth_token', $token, now()->addMinutes(10));
 
         $client->update(['token' => $token]);
@@ -61,7 +63,7 @@ trait ClientAuthorization
                 'firstName' => fake()->firstName(),
                 'lastName' => fake()->lastName(),
                 'role' => 'ADMIN',
-                'email' => env('ALPINA_AI_CLIENT_TEST_EMAIL'),
+                'email' => env('ALPINA_AI_CLIENT_EMAIL'),
                 'password' => 'password',
                 'entityId' => $offerId,
                 'send_email' => false,
