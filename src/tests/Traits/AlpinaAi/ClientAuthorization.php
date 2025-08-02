@@ -15,7 +15,7 @@ trait ClientAuthorization
 
         $this->adminUrl = 'https://admin.'.env('ALPINA_AI_TOP_DOMAIN');
 
-        if (! $client = Client::firstWhere('email', env('ALPINA_AI_CLIENT_TEST_EMAIL'))) {
+        if (! $client = Client::firstWhere('email', env('ALPINA_AI_CLIENT_EMAIL'))) {
             $client = $this->createUser();
         }
 
@@ -52,7 +52,7 @@ trait ClientAuthorization
             'name' => $company,
             'slug' => \Str::slug($company),
             'system_prompt' => 'Какой то там тестовый промпт',
-            'max_users' => fake()->numberBetween(10, 100),
+            'max_users' => 500,
             'expired_at' => now()->addYear()->format('Y-m-d'),
         ]);
 
