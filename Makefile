@@ -8,6 +8,9 @@ setup:
 	cp src/.env.dev src/.env;
 	docker network create aspnet
 
+network: 
+	docker network create aspnet
+
 # start deploying
 start-dep: composer npm composer-install dockerInstall build up 
 

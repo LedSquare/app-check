@@ -23,10 +23,12 @@ trait ClientAuthorization
             $client->update(['token' => $token]);
             return $client;
         }
-        $token = $this->http->post('v1/auth/login', [
+        $res = $this->http->post('v1/auth/login', [
             'email' => $client->email,
             'password' => $client->password,
-        ])->json('tokens')['access_token'];
+        ]);
+        $res->throw();
+        $token = $res->json('tokens')['access_token'];
 
         $token = 'Bearer '.$token;
 

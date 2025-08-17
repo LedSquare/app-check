@@ -22,15 +22,3 @@ test('Список моделей', function () {
 
     expect($res->status())->toBe(200);
 });
-
-test('Получения списка языков', function () {
-    /** @var Config $this */
-
-    $res = $this->alpinaHttp()
-        ->get('v2/translate/deepl/9f7f48eb-3b6a-46b9-820d-b89ad2894ef1/langs-list', [
-            'per_page' => 15,
-            'page' => 1,
-        ]);
-
-    expect($res->status())->toBe(200);
-});

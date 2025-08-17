@@ -19,10 +19,32 @@ test('Список переводов пользователя', function () {
     /** @var Config $this */
 
     $res = $this->alpinaHttp()
-        ->get('v2/translate/cabinet/chats', [
-            'per_page' => 15,
+        ->get('v2/translate/cabinet/translations', [
+            'per_page' => 100,
             'page' => 1,
         ]);
 
     expect($res->status())->toBe(200);
 });
+
+test('Получить список языков', function () {
+    /** @var Config $this */
+
+    $res = $this->alpinaHttp()
+        ->get('v2/translate/cabinet/deepl/prefer_quality_optimized/langs-list', [
+            'type' => 'source',
+        ]);
+
+    expect($res->status())->toBe(200);
+});
+
+// test('Перевести документ', function () {
+//     /** @var Config $this */
+
+//     $res = $this->alpinaHttp()
+//         ->get('v2/translate/cabinet/deepl/quality_optimized/trans-file', [
+//         ]);
+
+//     expect($res->status())->toBe(200);
+// });
+
